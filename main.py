@@ -15,7 +15,8 @@ HAND_CONNECTIONS = [
 ]
 THUMB_TIP_IDX=4
 INDEX_TIP_IDX=8
-pinch_state = True
+
+
 
 options = vision.HandLandmarkerOptions(
     base_options=python.BaseOptions(model_asset_path='hand_landmarker.task'),
@@ -27,6 +28,20 @@ detector = vision.HandLandmarker.create_from_options(options)
 
 cap = cv2.VideoCapture(0)
 
+def detect_pinch(threshold, image, points):
+    pinch_state = False
+    
+    thumb_x, thumb_y = points[THUMB_TIP_IDX]
+    index_x, index_y = points[INDEX_TIP_IDX]
+    distance = math.sqrt((thumb_x-index_x)**2+(thumb_y-index_y)**2)
+    if distance <= threshold:
+            
+            pinch_state = True
+            print("hi")
+            cv2.putText(image, "Pinch detected", (50,50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,255,0), 2)
+    elif distance > threshold+10:
+        pinch_state = False
+    
 def draw_hands(result, image):
     global pinch_state
     height, width = image.shape[:2]
@@ -46,13 +61,8 @@ def draw_hands(result, image):
             cv2.line(image, points[start], points[end], (255,255,255), 2)
 
     if len(points) > max(THUMB_TIP_IDX, INDEX_TIP_IDX):
-        thumb_x, thumb_y = points[THUMB_TIP_IDX]
-        index_x, index_y = points[INDEX_TIP_IDX]
-        distance = math.sqrt((thumb_x-index_x)**2+(thumb_y-index_y)**2)
-        if distance <= 30:
-            pinch_state = True
-            cv2.putText(image, "Pinch detected", (50,50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,255,0), 2)
-        
+        detect_pinch(50, image, points)
+
        
             
 
