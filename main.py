@@ -5,6 +5,7 @@ from mediapipe.tasks.python import vision
 import numpy as np
 import math
 
+
 HAND_CONNECTIONS = [
     (0, 1), (1, 2), (2, 3), (3, 4),
     (0, 5), (5, 6), (6, 7), (7, 8),
@@ -16,20 +17,18 @@ HAND_CONNECTIONS = [
 THUMB_TIP_IDX = 4
 INDEX_TIP_IDX = 8
 
-
+pinch_state = False
 options = vision.HandLandmarkerOptions(
     base_options=python.BaseOptions(model_asset_path='hand_landmarker.task'),
     running_mode=vision.RunningMode.VIDEO
 )
 
 detector = vision.HandLandmarker.create_from_options(options)
-
-
 cap = cv2.VideoCapture(0)
 
 
 def detect_pinch(threshold, image, points):
-    pinch_state = False
+    global pinch_state
 
     thumb_x, thumb_y = points[THUMB_TIP_IDX]
     index_x, index_y = points[INDEX_TIP_IDX]
@@ -67,23 +66,25 @@ def draw_hands(result, image):
     if len(points) > max(THUMB_TIP_IDX, INDEX_TIP_IDX):
         detect_pinch(40, image, points)
 
-
+    normalized_index_points = tuple([x/600 for x in points[INDEX_TIP_IDX]])
+    
 while cap.isOpened():
     success, image = cap.read()
 
     if not success:
         break
-
+    
+    image = cv2.flip(image, 1)
     mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=image)
     frame_timestamp = int(cap.get(cv2.CAP_PROP_POS_MSEC))
 
     detection_result = detector.detect_for_video(mp_image, frame_timestamp)
     if len(detection_result.hand_landmarks):
         draw_hands(detection_result, image)
-
     cv2.imshow("Pinch OS", image)
     if cv2.waitKey(1) & 0xff == ord("q"):
         break
+    
 
 cap.release()
 cv2.destroyAllWindows()
