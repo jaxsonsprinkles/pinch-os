@@ -1,3 +1,5 @@
 /hand_landmarker.task
 .venv/
 GazeTracking/
+__pycache__/overlay.cpython-311.pyc
+__pycache__/pinchos.cpython-311.pyc

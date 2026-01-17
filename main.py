@@ -3,7 +3,7 @@ import mediapipe as mp
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
 from pinchos import PinchOS
-
+from overlay import Overlay
 
 options = vision.HandLandmarkerOptions(
     base_options=python.BaseOptions(model_asset_path='hand_landmarker.task'),
@@ -14,9 +14,11 @@ detector = vision.HandLandmarker.create_from_options(options)
 cap = cv2.VideoCapture(0)
 
 pinch = PinchOS()
+overlay = Overlay()
 
 
-while cap.isOpened():
+while cap.isOpened() and overlay.running:
+    overlay.mainloop()
     success, image = cap.read()
 
     if not success:
@@ -37,6 +39,6 @@ while cap.isOpened():
     if cv2.waitKey(1) & 0xff == ord("q"):
         break
 
-
+overlay.quit()
 cap.release()
 cv2.destroyAllWindows()
