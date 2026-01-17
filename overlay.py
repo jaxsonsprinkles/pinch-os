@@ -32,26 +32,37 @@ class Overlay():
         self.running = True
 
     def getwindows(self):
-        self.window_list = []
+        list = []
 
-        def callback(window, ctx):
-            if win32gui.IsWindowVisible(window) and win32gui.GetWindowText(window) != "":
-                title = win32gui.GetWindowText(window)
-                left, top, right, bottom = win32gui.GetWindowRect(window)
+        def callback(hwnd, ctx):
+            if win32gui.IsWindowVisible(hwnd) and win32gui.GetWindowText(hwnd) != "":
+                title = win32gui.GetWindowText(hwnd)
+                left, top, right, bottom = win32gui.GetWindowRect(hwnd)
                 width = right - left
                 height = bottom - top
 
                 if (width, height) == (SCREEN_WIDTH, SCREEN_HEIGHT):
                     return
-                self.window_list.append({
-                    'window': window,
+                list.append({
+                    'window': hwnd,
                     'title': title,
                     'position': (left, top),
                     'dimensions': (width, height)
                 })
             return True
         win32gui.EnumWindows(callback, None)
-        return self.window_list
+        return list
+
+    def draw_windows(self):
+        self.screen.fill(FUCHSIA)
+        windows = self.getwindows()
+        foreground = win32gui.GetForegroundWindow()
+        for window in windows:
+            hwnd = window['window']
+            if hwnd == foreground:
+                x, y = window['position']
+                w, h = window['dimensions']
+                pygame.draw.rect(self.screen, (0, 255, 0), (x, y, w, h), 3)
 
     def mainloop(self):
         for event in pygame.event.get():
@@ -60,9 +71,7 @@ class Overlay():
             if event.type == pygame.KEYDOWN and event.key == pygame.K_q:
                 self.running = False
         self.screen.fill(FUCHSIA)
-        surf = pygame.Surface((200, 200), pygame.SRCALPHA)
-        pygame.draw.circle(surf, (0, 255, 0, 150), (100, 100), 80)
-        self.screen.blit(surf, (100, 100))
+        self.draw_windows()
 
         pygame.display.update()
         self.clock.tick(60)
