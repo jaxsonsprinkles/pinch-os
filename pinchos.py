@@ -1,6 +1,6 @@
 import cv2
 import math
-from screeninfo import get_monitors
+from constants import THUMB_TIP_IDX, INDEX_TIP_IDX
 
 HAND_CONNECTIONS = [
     (0, 1), (1, 2), (2, 3), (3, 4),
@@ -10,9 +10,6 @@ HAND_CONNECTIONS = [
     (13, 17), (17, 18), (18, 19), (19, 20),
     (0, 17)
 ]
-THUMB_TIP_IDX = 4
-INDEX_TIP_IDX = 8
-SCREEN_WIDTH, SCREEN_HEIGHT = get_monitors()[0].width, get_monitors()[0].height
 
 
 class PinchOS():
@@ -53,8 +50,3 @@ class PinchOS():
 
         if len(self.points) > max(THUMB_TIP_IDX, INDEX_TIP_IDX):
             self.detect_pinch(40, image)
-
-    def draw_overlay(self, width, height):
-        ix, iy = self.points[INDEX_TIP_IDX]
-        monitor_coordinates = (ix/width*SCREEN_WIDTH, iy/height*SCREEN_HEIGHT)
-        print(monitor_coordinates)

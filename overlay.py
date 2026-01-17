@@ -3,10 +3,7 @@ import win32api
 import win32gui
 import win32con
 import sys
-from screeninfo import get_monitors
-
-SCREEN_WIDTH, SCREEN_HEIGHT = get_monitors()[0].width, get_monitors()[0].height
-
+from constants import INDEX_TIP_IDX, SCREEN_WIDTH, SCREEN_HEIGHT
 
 FUCHSIA = (255, 0, 128)
 
@@ -54,7 +51,6 @@ class Overlay():
         return list
 
     def draw_windows(self):
-        self.screen.fill(FUCHSIA)
         windows = self.getwindows()
         foreground = win32gui.GetForegroundWindow()
         for window in windows:
@@ -64,7 +60,12 @@ class Overlay():
                 w, h = window['dimensions']
                 pygame.draw.rect(self.screen, (0, 255, 0), (x, y, w, h), 3)
 
-    def mainloop(self):
+    def draw_pointer(self, points, w, h):
+        ix, iy = points[INDEX_TIP_IDX]
+        monitor_coordinates = (ix/w*SCREEN_WIDTH, iy/h*SCREEN_HEIGHT)
+        pygame.draw.circle(self.screen, (0, 255, 0), monitor_coordinates, 8, 2)
+
+    def mainloop(self, pointer_points=None, w=None, h=None):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
@@ -72,7 +73,8 @@ class Overlay():
                 self.running = False
         self.screen.fill(FUCHSIA)
         self.draw_windows()
-
+        if len(pointer_points) is not 0 and w is not None and h is not None:
+            self.draw_pointer(pointer_points, w, h)
         pygame.display.update()
         self.clock.tick(60)
 

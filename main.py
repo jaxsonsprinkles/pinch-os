@@ -18,7 +18,7 @@ overlay = Overlay()
 
 
 while cap.isOpened() and overlay.running:
-    overlay.mainloop()
+
     success, image = cap.read()
 
     if not success:
@@ -32,9 +32,10 @@ while cap.isOpened() and overlay.running:
     detection_result = detector.detect_for_video(mp_image, frame_timestamp)
 
     x, y, w, h = cv2.getWindowImageRect("Pinch OS")
+    overlay.mainloop(pinch.points, w, h)
     if len(detection_result.hand_landmarks):
         pinch.draw_hands(detection_result, image)
-        pinch.draw_overlay(w, h)
+
     cv2.imshow("Pinch OS", image)
     if cv2.waitKey(1) & 0xff == ord("q"):
         break
