@@ -36,6 +36,9 @@ while cap.isOpened() and overlay.running:
     if len(detection_result.hand_landmarks):
         pinch.draw_hands(detection_result, image)
 
+    if pinch.pinch_state == True and overlay.current_window:
+        overlay.move_window(overlay.current_window["hwnd"])
+
     cv2.imshow("Pinch OS", image)
     if cv2.waitKey(1) & 0xff == ord("q"):
         break
