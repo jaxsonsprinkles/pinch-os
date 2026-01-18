@@ -92,7 +92,6 @@ class Overlay():
 
         window = next(
             (item for item in self.windows if item["hwnd"] == hwnd), None)
-        print(window)
         w, h = window['dimensions']
         px, py = self.pointer_rect.x, self.pointer_rect.y
         dx, dy = self.pointer_delta
