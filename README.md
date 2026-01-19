@@ -6,6 +6,10 @@ A hand gesture-based window management system for Windows that uses computer vis
 
 PinchOS allows you to move windows on your Windows desktop by pinching your thumb and index finger together while pointing at a window. The system uses your webcam to track hand movements in real-time and displays an interactive overlay showing available windows.
 
+
+https://github.com/user-attachments/assets/50a24b9c-5963-4611-8c68-07f152bc9f07
+
+
 ## Requirements
 
 - Python 3.x
